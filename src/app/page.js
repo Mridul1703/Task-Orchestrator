@@ -1,4 +1,4 @@
-"use client";
+'use client'
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -17,7 +17,8 @@ import AddIcon from "@mui/icons-material/Add";
 
 const Home = () => {
   const [tasks, setTasks] = useState(() => {
-    const savedTasks = localStorage.getItem("tasks");
+    // Safely access localStorage
+    const savedTasks = typeof window !== "undefined" ? localStorage.getItem("tasks") : null;
     return savedTasks ? JSON.parse(savedTasks) : [];
   });
 
@@ -25,14 +26,10 @@ const Home = () => {
   const [taskPriority, setTaskPriority] = useState("");
 
   useEffect(() => {
-    const savedTasks = localStorage.getItem("tasks");
-    if (savedTasks) {
-      setTasks(JSON.parse(savedTasks));
+    // Safely update localStorage whenever tasks state changes
+    if (typeof window !== "undefined") {
+      localStorage.setItem("tasks", JSON.stringify(tasks));
     }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
   }, [tasks]);
 
   const handleAddTask = () => {
@@ -77,11 +74,14 @@ const Home = () => {
 
   const handleClearAll = () => {
     setTasks([]);
-    localStorage.removeItem("tasks");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("tasks");
+    }
   };
 
   return (
     <Box
+      suppressHydrationWarning
       sx={{
         display: "flex",
         flexDirection: "column",
