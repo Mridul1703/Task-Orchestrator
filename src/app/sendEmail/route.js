@@ -3,7 +3,15 @@ import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
+    // Parse the request body
     const body = await req.json();
+
+    // Validate input
+    if (!body.email || !body.task || !body.desc) {
+      throw new Error("Missing required fields");
+    }
+
+    // Create transporter
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 587,
@@ -17,6 +25,7 @@ export async function POST(req) {
       },
     });
 
+    // Prepare email data
     const mailData = {
       from: process.env.NEXT_PUBLIC_EMAIL_USER,
       to: body.email,
@@ -24,14 +33,29 @@ export async function POST(req) {
       text: body.desc,
     };
 
-    await transporter.sendMail(mailData);
+    // Send email
+    const info = await transporter.sendMail(mailData);
 
-    return NextResponse.json({ success: true });
+    console.log('Message sent: %s', info.messageId);
+
+    return NextResponse.json({ 
+      success: true, 
+      messageId: info.messageId 
+    });
+
   } catch (error) {
     console.error("Error sending email:", error.message);
+    
+    // Log the full stack trace for debugging
+    console.trace(error.stack);
+
     return NextResponse.json(
-      { success: false, error: "Failed to send email" },
-      { status: 500 }
+      { 
+        success: false, 
+        error: error instanceof Error ? error.message : String(error),
+        statusCode: error instanceof Error ? 400 : 500
+      },
+      { status: error instanceof Error ? 400 : 500 }
     );
   }
 }
