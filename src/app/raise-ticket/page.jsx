@@ -43,7 +43,7 @@ export default function TicketManager() {
     event.preventDefault();
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sendEmail`, {
+      const response = await fetch(`/sendEmail`, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
