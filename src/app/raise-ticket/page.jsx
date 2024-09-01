@@ -43,7 +43,7 @@ export default function TicketManager() {
     event.preventDefault();
 
     try {
-      const response = await fetch("/sendEmail", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sendEmail`, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -290,11 +290,12 @@ const StyledCard = ({ id, task, email, desc, createdAt, handleComplete }) => {
     >
       <CardContent>
         <Typography
-          variant="h4"
+          variant="h5"
           sx={{
             color: "#008000",
             fontWeight: "bold",
             textAlign: "center",
+            pb: 1
           }}
         >
           {task}
