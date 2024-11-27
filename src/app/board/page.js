@@ -31,6 +31,7 @@ const KanbanBoard = () => {
 
   const [newTask, setNewTask] = useState("");
   const [taskPriority, setTaskPriority] = useState("");
+  const [deadline, setDeadline] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -39,7 +40,7 @@ const KanbanBoard = () => {
   }, [tasks]);
 
   const handleAddTask = () => {
-    if (newTask.trim()) {
+    if (newTask.trim() && deadline.trim()) {
       const updatedTasks = [
         ...tasks,
         {
@@ -47,11 +48,13 @@ const KanbanBoard = () => {
           content: newTask,
           status: "Backlog",
           priority: taskPriority,
+          deadline: deadline,
         },
       ];
       setTasks(updatedTasks);
       setNewTask("");
       setTaskPriority("");
+      setDeadline("");
     }
   };
 
@@ -115,6 +118,14 @@ const KanbanBoard = () => {
         <Typography variant="body1" sx={{ marginBottom: 1 }}>
           {task.content}
         </Typography>
+        {task.deadline && (
+          <Typography
+            variant="caption"
+            sx={{ display: "block", marginBottom: 1, color: "#616161" }}
+          >
+            Deadline: {task.deadline}
+          </Typography>
+        )}
         <Tooltip title="Delete">
           <IconButton
             aria-label="delete"
@@ -274,7 +285,7 @@ const KanbanBoard = () => {
             value={newTask}
             onChange={(e) => setNewTask(e.target.value)}
             sx={{
-              flexGrow: 2,
+              flexGrow: 1,
               backgroundColor: "rgba(255, 255, 255, 0.85)",
               borderRadius: "10px",
               "& .MuiOutlinedInput-root": {
@@ -283,18 +294,31 @@ const KanbanBoard = () => {
               },
             }}
           />
+          <TextField
+            type="date"
+            value={deadline}
+            onChange={(e) => setDeadline(e.target.value)}
+            sx={{
+              flexGrow: 1,
+              backgroundColor: "rgba(255, 255, 255, 0.85)",
+              borderRadius: "10px",
+            }}
+            InputProps={{
+              inputProps: {
+                min: new Date().toISOString().split("T")[0],
+              },
+            }}
+          />
           <Button
             variant="contained"
-            startIcon={<AddIcon />}
             onClick={handleAddTask}
+            startIcon={<AddIcon />}
             sx={{
               backgroundColor: "#008000",
-              "&:hover": {
-                backgroundColor: "#026b02",
-              },
-              height: "56px",
-              borderRadius: "10px",
-              boxShadow: "0 6px 18px rgba(0, 128, 0, 0.4)",
+              "&:hover": { backgroundColor: "#026b02" },
+              transition: "all 0.3s ease-in-out",
+              fontSize: "0.85rem",
+              textTransform: "none",
             }}
           >
             Add Task
@@ -303,12 +327,12 @@ const KanbanBoard = () => {
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)" },
-            gap: 2,
+            gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
+            gap: 3,
             width: "100%",
           }}
         >
-          {["Backlog", "In Progress", "Completed"].map((status) => (
+          {["Backlog", "In-Progress", "Completed"].map((status) => (
             <TaskColumn key={status} status={status}>
               {tasks
                 .filter((task) => task.status === status)
@@ -318,7 +342,6 @@ const KanbanBoard = () => {
             </TaskColumn>
           ))}
         </Box>
-        <Box sx={{ marginTop: 3 }}></Box>
         <Button
           variant="contained"
           onClick={handleClearAll}

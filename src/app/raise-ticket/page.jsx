@@ -39,6 +39,8 @@ export default function TicketManager() {
 
   const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
+  const generateTicketId = () => Math.floor(Math.random() * 9000 + 1000);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -78,7 +80,7 @@ export default function TicketManager() {
     if (Object.keys(newErrors).length === 0) {
       try {
         const newTask = {
-          id: Date.now(),
+          id: generateTicketId(),
           task,
           email,
           desc,
@@ -91,7 +93,6 @@ export default function TicketManager() {
 
         alert("Ticket submitted successfully!");
 
-        // Instead of using window.location.reload(), update the state
         setTasks(storedTasks);
         setTask("");
         setEmail("");
@@ -284,7 +285,7 @@ const StyledCard = ({ id, task, email, desc, createdAt, handleComplete }) => {
         transition: "transform 0.3s",
         "&:hover": {
           transform: "translateY(-10px)",
-          boxShadow: "MUIBoxShadow",
+          boxShadow: "0 5px 15px rgba(0, 128, 0, 0.2)",
         },
       }}
     >
@@ -295,11 +296,12 @@ const StyledCard = ({ id, task, email, desc, createdAt, handleComplete }) => {
             color: "#008000",
             fontWeight: "bold",
             textAlign: "center",
-            pb: 1
+            pb: 1,
           }}
         >
           {task}
         </Typography>
+        <Typography variant="subtitle1">Ticket ID: {id}</Typography>
         <Typography variant="body1">Description: {desc}</Typography>
         <Typography variant="subtitle1">Assigned to: {email}</Typography>
         <Typography variant="subtitle1">Created at: {createdAt}</Typography>
